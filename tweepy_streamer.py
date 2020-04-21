@@ -7,6 +7,7 @@ from tweepy import Stream
 import twitter_credentials
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 class TwitterClient():
     def __init__(self, twitter_user=None):
@@ -92,7 +93,7 @@ class TweetAnalyzer():
     """
 
     def tweets_to_dataframe(self, tweets):
-        df = pd.DataFrame(data=[tweet.text for tweet in tweets], columns=['Tweets'])
+        df = pd.DataFrame(data=[tweet.text for tweet in tweets], columns=['tweets'])
 
         df['id'] = np.array([tweet.id for tweet in tweets])
         df['len'] = np.array([len(tweet.text) for tweet in tweets])
@@ -109,8 +110,28 @@ if __name__ == "__main__":
 
     api = twitter_client.get_twitter_client_api()
 
-    tweets = api.user_timeline(screen_name="jairbolsonaro", count=20)
+    tweets = api.user_timeline(screen_name="jairbolsonaro", count=200)
 
     df = tweet_analyzer.tweets_to_dataframe(tweets)
 
-    print(df.head(10))
+    #print(np.mean(df['len']))
+
+    #print(np.max(df['likes']))
+
+    #print(np.max(df['retweets']))
+
+    # Time Series
+    #time_likes = pd.Series(data=df['likes'].values, index=df['date'])
+    #time_likes.plot(figsize=(16, 4), color='r')
+    #plt.show()
+
+    #time_retweets = pd.Series(data=df['retweets'].values, index=df['date'])
+    #time_retweets.plot(figsize=(16, 4), color='r')
+    #plt.show()
+
+    time_likes = pd.Series(data=df['likes'].values, index=df['date'])
+    time_likes.plot(figsize=(16, 4), label="Likes", legend=True)
+    
+    time_retweets = pd.Series(data=df['retweets'].values, index=df['date'])
+    time_retweets.plot(figsize=(16, 4), label="Retweets", legend=True)
+    plt.show()
